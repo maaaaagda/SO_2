@@ -19,13 +19,7 @@ public class Task
         this.arrival = arrival;
         this.cylinderNumber = cylinderNumber;
     }
-    public Task(int arrival,  int cylinderNumber, int deadline, int done)
-    {
-        this.arrival = arrival;
-        this.cylinderNumber = cylinderNumber;
-        this.deadline = deadline;
-        this.done = done;
-    }
+
     public Task(int arrival,  int cylinderNumber, int deadline)
     {
         this.arrival = arrival;

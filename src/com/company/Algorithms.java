@@ -9,238 +9,30 @@ import java.util.Comparator;
  */
 public class Algorithms {
 
-    final int DISK_SIZE = 100;
+    final int DISK_SIZE = 200;
     ArrayList<Task> priorityQueue = new ArrayList<Task>();
     ArrayList<Task> queue = new ArrayList<Task>();
 
-    public Algorithms() {
-        queue.add(new Task(10, 30));
+    public Algorithms(ArrayList<Task> queue, ArrayList <Task> priorityQueue) {
+        this.priorityQueue = priorityQueue;
+        this.queue = queue;
+
+      /*  queue.add(new Task(10, 30));
         queue.add(new Task(20, 50));
         queue.add(new Task(30, 10));
         queue.add(new Task(40, 5));
         queue.add(new Task(50, 100));
         queue.add(new Task(400, 17));
-      /*  queue.add(new Task(230, 10, 50, 0));
-        queue.add(new Task(240, 70, 50, 0));
-        queue.add(new Task(250, 49, 50, 0));
-        queue.add(new Task(300, 0, 50, 200));
-        queue.add(new Task(340, 5, 50, 0));
-        queue.add(new Task(350, 90, 50, 0)); */
+        queue.add(new Task(500, 80));
+        queue.add(new Task(600, 77));
+
         priorityQueue.add(new Task(34, 35, 200));
         priorityQueue.add(new Task(32, 80, 180));
         priorityQueue.add(new Task(35, 45, 300));
-
+        priorityQueue.add(new Task(85, 55, 20));
+*/
     }
 
-    public int FCFS() {
-
-        ArrayList<Task> tasks = new ArrayList<Task>();
-        for (Task aTask : queue) {
-            tasks.add(aTask);
-        }
-
-        Collections.sort(tasks, Task.arrivalComparator);
-        int blocks = tasks.get(0).cylinderNumber;
-        for (int i = 0; i < tasks.size() - 1; i++) {
-            blocks += Math.abs(tasks.get(i + 1).cylinderNumber - tasks.get(i).cylinderNumber);
-        }
-        return blocks;
-    }
-
-    public int SSTF() {
-
-        int blocks = 0;
-        int currentBlock = 0;
-        int moved = 0;
-        int currentTime = 0;
-        ArrayList<Task> tasks = new ArrayList<Task>();
-        ArrayList<Task> waitingTasks = new ArrayList<Task>();
-        for (Task aTask : queue) {
-            tasks.add(aTask);
-        }
-
-        Collections.sort(tasks, Task.arrivalComparator);
-
-
-        do {
-            for (int i = 0; i < tasks.size(); i++)
-
-            {
-                if (currentTime == (tasks.get(i)).getArrival()) {
-
-                    waitingTasks.add(tasks.get(i));
-                    System.out.println("dodany" + waitingTasks);
-                }
-
-
-            }
-            if (moved == 0 && waitingTasks.size() != 0) {
-                System.out.println("break");
-                if (waitingTasks.get(0).done == 1) {
-                    waitingTasks.get(0).setDone(0);
-                    waitingTasks.remove(0);
-                }
-                if (waitingTasks.size() != 0) {
-                    Task.compareWithCurrentBlock(currentBlock, waitingTasks);
-                    System.out.println(waitingTasks);
-                    moved = Math.abs(waitingTasks.get(0).cylinderNumber - currentBlock);
-                    currentBlock = waitingTasks.get(0).cylinderNumber;
-                    waitingTasks.get(0).setDone(1);
-                }
-            }
-            if (waitingTasks.size() != 0) {
-                moved--;
-                blocks++;
-                System.out.println(moved + " " + blocks);
-            }
-            currentTime++;
-
-
-        }
-        while (currentTime != 100000);
-        return blocks;
-
-    }
-
-    public int SCAN() {
-        int blocks = 0;
-        int currentBlock = 0;
-        int moved = 0;
-        int currentTime = 0;
-        boolean forwards = true;
-        ArrayList<Task> tasks = new ArrayList<Task>();
-        ArrayList<Task> waitingTasks = new ArrayList<Task>();
-        for (Task aTask : queue) {
-            tasks.add(new Task(aTask));
-        }
-
-        Collections.sort(tasks, Task.arrivalComparator);
-        System.out.println("TTTTTT" + tasks);
-
-        do {
-            for (int i = 0; i < tasks.size(); i++)
-
-            {
-                if (currentTime == (tasks.get(i)).getArrival()) {
-
-                    waitingTasks.add(tasks.get(i));
-                    System.out.println("waiting" + waitingTasks);
-                    System.out.println(moved);
-                }
-
-
-            }
-            if (moved == 0 && waitingTasks.size() != 0) {
-                System.out.println(blocks);
-                if (waitingTasks.get(0).done == 1) {
-                    System.out.println("removed" + waitingTasks.get(0));
-                    //   waitingTasks.get(0).setDone(0);
-                    waitingTasks.remove(0);
-
-                }
-                if (waitingTasks.size() != 0) {
-                    if (forwards == true) {
-                        Task.compareWithCurrentBlockForwards(currentBlock, waitingTasks);
-                        System.out.println("forwards" + waitingTasks);
-                        if (waitingTasks.get(0).cylinderNumber > currentBlock) {
-                            moved = Math.abs(waitingTasks.get(0).cylinderNumber - currentBlock);
-                            currentBlock = waitingTasks.get(0).cylinderNumber;
-                            waitingTasks.get(0).setDone(1);
-                        }
-                    } else {
-                        Task.compareWithCurrentBlockBackwards(currentBlock, waitingTasks);
-                        System.out.println("backwards" + waitingTasks);
-                        if (waitingTasks.get(0).cylinderNumber < currentBlock) {
-                            moved = Math.abs(waitingTasks.get(0).cylinderNumber - currentBlock);
-                            currentBlock = waitingTasks.get(0).cylinderNumber;
-                            waitingTasks.get(0).setDone(1);
-                        }
-                    }
-
-
-                    if (currentBlock == DISK_SIZE) {
-                        forwards = false;
-                    }
-                    if (currentBlock == 0) {
-                        forwards = true;
-                    }
-                }
-            }
-            if (waitingTasks.size() != 0 && moved != 0) {
-                moved--;
-                blocks++;
-            }
-
-            currentTime++;
-
-
-        }
-        while (currentTime != 1000);
-        return blocks;
-
-    }
-
-    public int C_SCAN() {
-        int blocks = 0;
-        int currentBlock = 0;
-        int moved = 0;
-        int currentTime = 0;
-        ArrayList<Task> tasks = new ArrayList<Task>();
-        ArrayList<Task> waitingTasks = new ArrayList<Task>();
-        for (Task aTask : queue) {
-            tasks.add(aTask);
-        }
-
-        Collections.sort(tasks, Task.arrivalComparator);
-        System.out.println(tasks);
-
-        do {
-            for (int i = 0; i < tasks.size(); i++)
-
-            {
-                if (currentTime == (tasks.get(i)).getArrival()) {
-
-                    waitingTasks.add(tasks.get(i));
-                    System.out.println("waiting" + waitingTasks);
-                    System.out.println(moved);
-                }
-            }
-            if (moved == 0 && waitingTasks.size() != 0) {
-                System.out.println(blocks);
-                if (waitingTasks.get(0).done == 1) {
-                    System.out.println("removed" + waitingTasks.get(0));
-                    waitingTasks.get(0).setDone(0);
-                    waitingTasks.remove(0);
-
-                }
-                if (waitingTasks.size() != 0) {
-
-                    Task.compareWithCurrentBlockForwards(currentBlock, waitingTasks);
-                    System.out.println("forwards" + waitingTasks);
-                    if (waitingTasks.get(0).cylinderNumber >= currentBlock) {
-                        moved = Math.abs(waitingTasks.get(0).cylinderNumber - currentBlock);
-                        currentBlock = waitingTasks.get(0).cylinderNumber;
-                        waitingTasks.get(0).setDone(1);
-                    }
-
-
-                    if (currentBlock == DISK_SIZE) {
-                        currentBlock = 0;
-                        blocks += 1;
-                    }
-
-                }
-            }
-            if (waitingTasks.size() != 0 && moved != 0) {
-                moved--;
-                blocks++;
-            }
-            currentTime++;
-        }
-        while (currentTime != 1000);
-        return blocks;
-
-    }
 
 
     public int FCFS_EDF() {
@@ -291,14 +83,12 @@ public class Algorithms {
                 if (waitingPriorityTasks.get(0).cylinderNumber == currentBlock) {
                     System.out.println("---------------------------------------------Priority done" + waitingPriorityTasks.get(0));
                     waitingPriorityTasks.remove(0);
-
                 }
                 /**
                  * when new task has come or last task has been done
                  */
                 Collections.sort(waitingPriorityTasks, Task.deadlineComparator);
                 if (waitingPriorityTasks.size() != 0 && currentBlock == waitingPriorityTasks.get(0).cylinderNumber) {
-
                     /**
                      * if pointer wont meet deadline is rejected
                      */
@@ -307,8 +97,6 @@ public class Algorithms {
                         rejected++;
                     }
                 }
-
-
                 if (waitingPriorityTasks.size() != 0) {
                     /**
                      * if pointer is moving forwards
@@ -329,7 +117,6 @@ public class Algorithms {
                     for (int i = 0; i < waitingPriorityTasks.size(); i++) {
                         waitingPriorityTasks.get(i).setDeadline(waitingPriorityTasks.get(i).deadline - 1);
                     }
-
                 }
             }
             /**
@@ -360,9 +147,7 @@ public class Algorithms {
                 }
 
             }
-
-
-            currentTime++;
+             currentTime++;
             if (waitingPriorityTasks.size() != 0 || waitingTasks.size() != 0) {
                 System.out.println("Currenttime: " + currentTime);
                 System.out.println("Currentblock: " + currentBlock);
@@ -373,10 +158,9 @@ public class Algorithms {
 
 
         }
-        while (currentTime != 1000);
+        while (currentTime != 100000);
         return blocks;
     }
-
     public int FCFS_FD_SCAN() {
         int blocks = 0;
         int currentBlock = 0;
@@ -418,64 +202,40 @@ public class Algorithms {
                 }
             }
             if (waitingPriorityTasks.size() != 0) {
-                System.out.println("Priority: " + waitingPriorityTasks);
                 /**
-                 * if pointer reaches task cylinder number its being removed
+                 * deadline is descanding with time
                  */
-                if (waitingPriorityTasks.get(0).cylinderNumber == currentBlock) {
-                    System.out.println("---------------------------------------------Prorytet wykonany" + waitingPriorityTasks.get(0));
-                    waitingPriorityTasks.remove(0);
-
-                }
-                /**
-                 * when new task has come or last task has been done
-                 */
-                Collections.sort(waitingPriorityTasks, Task.deadlineComparator);
-
-                if (waitingPriorityTasks.size() != 0 && currentBlock == waitingPriorityTasks.get(0).cylinderNumber) {
+                for (int i = 0; i < waitingPriorityTasks.size(); i++) {
+                    waitingPriorityTasks.get(i).setDeadline(waitingPriorityTasks.get(i).deadline - 1);
                     /**
-                     * if pointer wont meet deadline is rejected
+                     * doing task along the way of pointer
                      */
-                    if (waitingPriorityTasks.get(0).deadline < Math.abs(waitingPriorityTasks.get(0).cylinderNumber - currentBlock)) {
-                        System.out.println("rejection");
-                        rejected++;
+                    if (currentBlock == waitingPriorityTasks.get(i).cylinderNumber) {
+                        System.out.println("--------------------Removed on the way" + waitingPriorityTasks.get(i));
+                        waitingPriorityTasks.remove(i);
                     }
                 }
-
-
-                if (waitingPriorityTasks.size() != 0) {
-                    /**
-                     * when pointer is moving forwards
-                     */
+                /**
+                 * if pointer is moving forwards
+                 */
+                if (waitingPriorityTasks.size() > 0) {
                     if (waitingPriorityTasks.get(0).cylinderNumber > currentBlock) {
                         currentBlock++;
                     }
                     /**
-                     * when pointer is moving backwards
+                     * if pointer is moving backwards
                      */
                     else {
                         currentBlock--;
                     }
                     blocks++;
-
-                    /**
-                     * deadline is descanding with time
-                     */
-                    for (int i = 1; i < waitingPriorityTasks.size(); i++) {
-                        waitingPriorityTasks.get(i).setDeadline(waitingPriorityTasks.get(i).deadline - 1);
-                        /**
-                         * doing task along the way of pointer
-                         */
-                        if (currentBlock == waitingPriorityTasks.get(i).cylinderNumber) {
-                            System.out.println("--------------------Removed on the way" + waitingPriorityTasks.get(i));
-                            waitingPriorityTasks.remove(i);
-                        }
-                    }
                 }
             }
-            /**
-             * not priority tasks
-             */
+
+        /**
+         * if there is no tasks in priority queue but are tasks without deadline
+         */
+
             else if (waitingTasks.size() != 0) {
                 System.out.println("Norlmal tasks: " + waitingTasks);
                 /**
@@ -510,10 +270,9 @@ public class Algorithms {
 
 
         }
-        while (currentTime != 1000);
+        while (currentTime != 100000);
         return blocks;
     }
-
     public int SSTF_EDF() {
         int blocks = 0;
         int currentBlock = 0;
@@ -567,8 +326,9 @@ public class Algorithms {
                 /**
                  * when new task has come or last task has been done
                  */
+                Collections.sort(waitingPriorityTasks, Task.deadlineComparator);
                 if (waitingPriorityTasks.size() != 0 && currentBlock == waitingPriorityTasks.get(0).cylinderNumber) {
-                    Collections.sort(waitingPriorityTasks, Task.deadlineComparator);
+
                     /**
                      * if pointer wont meet deadline is rejected
                      */
@@ -597,7 +357,7 @@ public class Algorithms {
                     /**
                      * deadline is descanding with time
                      */
-                    for (int i = 1; i < waitingPriorityTasks.size(); i++) {
+                    for (int i = 0; i < waitingPriorityTasks.size(); i++) {
                         waitingPriorityTasks.get(i).setDeadline(waitingPriorityTasks.get(i).deadline - 1);
                         }
                 }
@@ -637,7 +397,7 @@ public class Algorithms {
 
 
         }
-        while (currentTime != 1000);
+        while (currentTime != 100000);
         return blocks;
     }
     public int SSTF_FD_SCAN() {
@@ -693,8 +453,9 @@ public class Algorithms {
                 /**
                  * when new task has come or last task has been done
                  */
+                Collections.sort(waitingPriorityTasks, Task.deadlineComparator);
                 if (waitingPriorityTasks.size() != 0 && currentBlock == waitingPriorityTasks.get(0).cylinderNumber) {
-                    Collections.sort(waitingPriorityTasks, Task.deadlineComparator);
+
                     /**
                      * if pointer wont meet deadline is rejected
                      */
@@ -707,23 +468,9 @@ public class Algorithms {
 
                 if (waitingPriorityTasks.size() != 0) {
                     /**
-                     * when pointer is moving forwards
-                     */
-                    if (waitingPriorityTasks.get(0).cylinderNumber > currentBlock) {
-                        currentBlock++;
-                    }
-                    /**
-                     * when pointer is moving backwards
-                     */
-                    else {
-                        currentBlock--;
-                    }
-                    blocks++;
-
-                    /**
                      * deadline is descanding with time
                      */
-                    for (int i = 1; i < waitingPriorityTasks.size(); i++) {
+                    for (int i = 0; i < waitingPriorityTasks.size(); i++) {
                         waitingPriorityTasks.get(i).setDeadline(waitingPriorityTasks.get(i).deadline - 1);
                         /**
                          * doing task along the way of pointer
@@ -732,6 +479,21 @@ public class Algorithms {
                             System.out.println("--------------------Removed on the way" + waitingPriorityTasks.get(i));
                             waitingPriorityTasks.remove(i);
                         }
+                    }
+                    if (waitingPriorityTasks.size() > 0) {
+                        /**
+                         * when pointer is moving forwards
+                         */
+                        if (waitingPriorityTasks.get(0).cylinderNumber > currentBlock) {
+                            currentBlock++;
+                        }
+                        /**
+                         * when pointer is moving backwards
+                         */
+                        else {
+                            currentBlock--;
+                        }
+                        blocks++;
                     }
                 }
             } else if (waitingTasks.size() != 0)
@@ -770,199 +532,524 @@ public class Algorithms {
 
 
         }
-        while (currentTime != 100.0);
+        while (currentTime != 100000);
         return blocks;
     }
-
-    public void EDF(ArrayList<Task> waitingPriorityTasks, int currentBlock, int rejected, int blocks)
-    {
-        System.out.println("Priority: " + waitingPriorityTasks);
-        /**
-         * if pointer reaches task cylinder number its being removed
-         */
-        if (waitingPriorityTasks.get(0).cylinderNumber == currentBlock) {
-            System.out.println("---------------------------------------------Prorytet wykonany" + waitingPriorityTasks.get(0));
-            waitingPriorityTasks.remove(0);
-
-        }
-        /**
-         * when new task has come or last task has been done
-         */
-        if (waitingPriorityTasks.size() != 0 && currentBlock == waitingPriorityTasks.get(0).cylinderNumber) {
-            Collections.sort(waitingPriorityTasks, Task.deadlineComparator);
-            /**
-             * if pointer wont meet deadline is rejected
-             */
-            if (waitingPriorityTasks.get(0).deadline < Math.abs(waitingPriorityTasks.get(0).cylinderNumber - currentBlock)) {
-                System.out.println("rejection");
-                rejected++;
-            }
-        }
-        if (waitingPriorityTasks.size() != 0) {
-            /**
-             * if pointer is moving forwards
-             */
-            if (waitingPriorityTasks.get(0).cylinderNumber > currentBlock) {
-                currentBlock++;
-            }
-            /**
-             * if pointer is moving backwards
-             */
-            else {
-                currentBlock--;
-            }
-            blocks++;
-            /**
-             * deadline is descanding with time
-             */
-            for (int i = 0; i < waitingPriorityTasks.size(); i++) {
-                waitingPriorityTasks.get(i).setDeadline(waitingPriorityTasks.get(i).deadline - 1);
-            }
-
-        }
-    }
-    public void FD_SCAN(ArrayList<Task> waitingPriorityTasks, int currentBlock, int rejected, int blocks)
-    {
-        System.out.println("Priority: " + waitingPriorityTasks);
-        /**
-         * if pointer reaches task cylinder number its being removed
-         */
-        if (waitingPriorityTasks.get(0).cylinderNumber == currentBlock) {
-            System.out.println("---------------------------------------------Prorytet wykonany" + waitingPriorityTasks.get(0));
-            waitingPriorityTasks.remove(0);
-
-        }
-        /**
-         * when new task has come or last task has been done
-         */
-        if (waitingPriorityTasks.size() != 0 && currentBlock == waitingPriorityTasks.get(0).cylinderNumber) {
-            Collections.sort(waitingPriorityTasks, Task.deadlineComparator);
-            /**
-             * if pointer wont meet deadline is being rejected
-             */
-            if (waitingPriorityTasks.get(0).deadline < Math.abs(waitingPriorityTasks.get(0).cylinderNumber - currentBlock)) {
-                System.out.println("rejection");
-                rejected++;
-            }
-        }
-
-
-        if (waitingPriorityTasks.size() != 0) {
-            /**
-             * when pointer is moving forwards
-             */
-            if (waitingPriorityTasks.get(0).cylinderNumber > currentBlock) {
-                currentBlock++;
-            }
-            /**
-             * when pointer is moving backwards
-             */
-            else {
-                currentBlock--;
-            }
-            blocks++;
-
-            /**
-             * deadline is descanding with time
-             */
-            for (int i = 1; i < waitingPriorityTasks.size(); i++) {
-                waitingPriorityTasks.get(i).setDeadline(waitingPriorityTasks.get(i).deadline - 1);
-                /**
-                 * doing task along the way of pointer
-                 */
-                if (currentBlock == waitingPriorityTasks.get(i).cylinderNumber) {
-                    System.out.println("--------------------Removed on the way" + waitingPriorityTasks.get(i));
-                    waitingPriorityTasks.remove(i);
-                }
-            }
-        }
-    }
-}
-/*
-    public int LOOK()
-    {
+    public int SCAN_EDF() {
         int blocks = 0;
         int currentBlock = 0;
-        int moved = 0;
         int currentTime = 0;
         boolean forwards = true;
+        int rejected = 0;
         ArrayList<Task> tasks = new ArrayList<Task>();
+        ArrayList<Task> priorityTasks = new ArrayList<Task>();
         ArrayList<Task> waitingTasks = new ArrayList<Task>();
-        for(Task aTask : queue)
-        {
-            tasks.add(aTask);
+        ArrayList<Task> waitingPriorityTasks = new ArrayList<Task>();
+        for (Task aTask : queue) {
+            tasks.add(new Task(aTask));
         }
-
-        Collections.sort(tasks, Task.arrivalComparator);
-        System.out.println(tasks);
-
+        for (Task aTask : priorityQueue) {
+            priorityTasks.add(new Task(aTask));
+        }
+        System.out.println("proritytasks" + priorityTasks);
         do {
-            for (int i = 0; i < tasks.size(); i++)
-
-            {
+            /**
+             * copying to waiting queues when current time equals arrival time
+             */
+            for (int i = 0; i < tasks.size(); i++) {
                 if (currentTime == (tasks.get(i)).getArrival()) {
 
                     waitingTasks.add(tasks.get(i));
                     System.out.println("waiting" + waitingTasks);
-                    System.out.println(moved);
                 }
             }
-            if (moved == 0 && waitingTasks.size() != 0 )
-            {
-                System.out.println(blocks);
-                if(waitingTasks.get(0).done == 1) {
-                    System.out.println("removed" + waitingTasks.get(0));
-                    waitingTasks.get(0).setDone(0);
-                    waitingTasks.remove(0);
+            for (int i = 0; i < priorityTasks.size(); i++)
 
+            {
+                if (currentTime == (priorityTasks.get(i)).getArrival()) {
+
+                    waitingPriorityTasks.add(priorityTasks.get(i));
+                    System.out.println("waitingPrority" + waitingPriorityTasks);
                 }
-                if(waitingTasks.size() != 0 )
-                {
-                    if(forwards == true) {
-                        Task.compareWithCurrentBlockForwards(currentBlock, waitingTasks);
-                        System.out.println("forwards" + waitingTasks);
-                        if(waitingTasks.get(0).cylinderNumber>=currentBlock)
-                        {
-                            moved = Math.abs(waitingTasks.get(0).cylinderNumber - currentBlock);
-                            currentBlock = waitingTasks.get(0).cylinderNumber;
-                            waitingTasks.get(0).setDone(1);
-                        }
-                        else {
-                            forwards = false;
-                        }
+            }
+            if (waitingPriorityTasks.size() != 0) {
+                System.out.println("Priority: " + waitingPriorityTasks);
+                /**
+                 * if pointer reaches task cylinder number its being removed
+                 */
+                if (waitingPriorityTasks.get(0).cylinderNumber == currentBlock) {
+                    System.out.println("---------------------------------------------Priority done" + waitingPriorityTasks.get(0));
+                    waitingPriorityTasks.remove(0);
+                }
+                /**
+                 * when new task has come or last task has been done
+                 */
+                Collections.sort(waitingPriorityTasks, Task.deadlineComparator);
+                if (waitingPriorityTasks.size() != 0 && currentBlock == waitingPriorityTasks.get(0).cylinderNumber) {
+                    /**
+                     * if pointer wont meet deadline is rejected
+                     */
+                    if (waitingPriorityTasks.get(0).deadline < Math.abs(waitingPriorityTasks.get(0).cylinderNumber - currentBlock)) {
+                        System.out.println("rejection");
+                        rejected++;
                     }
+                }
+                if (waitingPriorityTasks.size() != 0) {
+                    /**
+                     * if pointer is moving forwards
+                     */
+                    if (waitingPriorityTasks.get(0).cylinderNumber > currentBlock) {
+                        currentBlock++;
+                    }
+                    /**
+                     * if pointer is moving backwards
+                     */
                     else {
-                        Task.compareWithCurrentBlockBackwards(currentBlock, waitingTasks);
-                        System.out.println("backwards" + waitingTasks);
-                        if(waitingTasks.get(0).cylinderNumber<=currentBlock)
-                        {
-                            moved = Math.abs(waitingTasks.get(0).cylinderNumber - currentBlock);
-                            currentBlock = waitingTasks.get(0).cylinderNumber;
-                            waitingTasks.get(0).setDone(1);
-                        }
-                        else {
-                            forwards = true;
-                        }
+                        currentBlock--;
                     }
-                    if(currentBlock == DISK_SIZE)
-                    {
+                    blocks++;
+                    /**
+                     * deadline is descanding with time
+                     */
+                    for (int i = 0; i < waitingPriorityTasks.size(); i++) {
+                        waitingPriorityTasks.get(i).setDeadline(waitingPriorityTasks.get(i).deadline - 1);
+                    }
+                }
+            }
+            /**
+             * if there is no tasks in priority queue but are tasks without deadline
+             */
+            else if (waitingTasks.size() != 0) {
+                System.out.println("Norlmalne: " + waitingTasks + "forwards: " + forwards);
+                /**
+                 * if pointer reaches task cylinder number its being removed
+                 */
+                for(int i = 0; i < waitingTasks.size(); i++)
+                {
+                    if (currentBlock == waitingTasks.get(i).cylinderNumber) {
+                        System.out.println("-----------------------------------------------Normal task has been done: " + waitingTasks.get(i));
+                        waitingTasks.remove(i);
+                    }
+                }
+
+                /**
+                 * processing other tasks from normal queue, Scannig
+                 */
+                if (waitingTasks.size() != 0) {
+                     if (forwards) {
+                        currentBlock++;
+                    } else {
+                        currentBlock--;
+                    }
+                    if (currentBlock == DISK_SIZE) {
                         forwards = false;
                     }
-                    if(currentBlock == 0)
-                    {
+                    if (currentBlock == 0) {
                         forwards = true;
+                    }
+                    blocks++;
+                }
+            }
+            currentTime++;
+            if (waitingPriorityTasks.size() != 0 || waitingTasks.size() != 0) {
+                System.out.println("Currenttime: " + currentTime);
+                System.out.println("Currentblock: " + currentBlock);
+                System.out.println("Blocks: " + blocks);
+            } else {
+                System.out.println("Waiting for a task");
+            }
+        }
+            while (currentTime != 100000) ;
+            return blocks;
+
+
+    }
+    public int SCAN_FD_SCAN() {
+        int blocks = 0;
+        int currentBlock = 0;
+        int currentTime = 0;
+        boolean forwards = true;
+        int rejected = 0;
+        ArrayList<Task> tasks = new ArrayList<Task>();
+        ArrayList<Task> priorityTasks = new ArrayList<Task>();
+        ArrayList<Task> waitingTasks = new ArrayList<Task>();
+        ArrayList<Task> waitingPriorityTasks = new ArrayList<Task>();
+        for (Task aTask : queue) {
+            tasks.add(new Task(aTask));
+        }
+        for (Task aTask : priorityQueue) {
+            priorityTasks.add(new Task(aTask));
+        }
+        System.out.println("proritytasks" + priorityTasks);
+        do {
+            /**
+             * copying to waiting queues when current time equals arrival time
+             */
+            for (int i = 0; i < tasks.size(); i++) {
+                if (currentTime == (tasks.get(i)).getArrival()) {
+
+                    waitingTasks.add(tasks.get(i));
+                    System.out.println("waiting" + waitingTasks);
+                }
+            }
+            for (int i = 0; i < priorityTasks.size(); i++)
+
+            {
+                if (currentTime == (priorityTasks.get(i)).getArrival()) {
+
+                    waitingPriorityTasks.add(priorityTasks.get(i));
+                    System.out.println("waitingPrority" + waitingPriorityTasks);
+                }
+            }
+            if (waitingPriorityTasks.size() != 0) {
+                System.out.println("Priority: " + waitingPriorityTasks);
+                /**
+                 * if pointer reaches task cylinder number its being removed
+                 */
+                if (waitingPriorityTasks.get(0).cylinderNumber == currentBlock) {
+                    System.out.println("---------------------------------------------Priority done" + waitingPriorityTasks.get(0));
+                    waitingPriorityTasks.remove(0);
+                }
+                /**
+                 * when new task has come or last task has been done
+                 */
+                Collections.sort(waitingPriorityTasks, Task.deadlineComparator);
+                if (waitingPriorityTasks.size() != 0 && currentBlock == waitingPriorityTasks.get(0).cylinderNumber) {
+                    /**
+                     * if pointer wont meet deadline is rejected
+                     */
+                    if (waitingPriorityTasks.get(0).deadline < Math.abs(waitingPriorityTasks.get(0).cylinderNumber - currentBlock)) {
+                        System.out.println("rejection");
+                        rejected++;
+                    }
+                }
+                if (waitingPriorityTasks.size() != 0) {
+                    /**
+                     * deadline is descanding with time
+                     */
+                    for (int i = 0; i < waitingPriorityTasks.size(); i++) {
+                        waitingPriorityTasks.get(i).setDeadline(waitingPriorityTasks.get(i).deadline - 1);
+                        /**
+                         * doing task along the way of pointer
+                         */
+                        if (currentBlock == waitingPriorityTasks.get(i).cylinderNumber) {
+                            System.out.println("--------------------Removed on the way" + waitingPriorityTasks.get(i));
+                            waitingPriorityTasks.remove(i);
+                        }
+                    }
+                    /**
+                     * if pointer is moving forwards
+                     */
+                    if (waitingPriorityTasks.size() > 0) {
+                        if (waitingPriorityTasks.get(0).cylinderNumber > currentBlock) {
+                            currentBlock++;
+                        }
+                        /**
+                         * if pointer is moving backwards
+                         */
+                        else {
+                            currentBlock--;
+                        }
+                        blocks++;
                     }
                 }
             }
-            if(waitingTasks.size() != 0 && moved != 0 )
-            {
-                moved--;
-                blocks++;
+            /**
+             * if there is no tasks in priority queue but are tasks without deadline
+             */
+            else if (waitingTasks.size() != 0) {
+                System.out.println("Norlmalne: " + waitingTasks + "forwards: " + forwards);
+                /**
+                 * if pointer reaches task cylinder number its being removed
+                 */
+                for(int i = 0; i < waitingTasks.size(); i++)
+                {
+                    if (currentBlock == waitingTasks.get(i).cylinderNumber) {
+                        System.out.println("-----------------------------------------------Normal task has been done: " + waitingTasks.get(i));
+                        waitingTasks.remove(i);
+                    }
+                }
+
+                /**
+                 * processing other tasks from normal queue, Scannig
+                 */
+                if (waitingTasks.size() != 0) {
+                    if (forwards) {
+                        currentBlock++;
+                    } else {
+                        currentBlock--;
+                    }
+                    if (currentBlock == DISK_SIZE) {
+                        forwards = false;
+                    }
+                    if (currentBlock == 0) {
+                        forwards = true;
+                    }
+                    blocks++;
+                }
             }
             currentTime++;
+            if (waitingPriorityTasks.size() != 0 || waitingTasks.size() != 0) {
+                System.out.println("Currenttime: " + currentTime);
+                System.out.println("Currentblock: " + currentBlock);
+                System.out.println("Blocks: " + blocks);
+            } else {
+                System.out.println("Waiting for a task");
+            }
         }
-        while (currentTime != 1000);
+        while (currentTime != 100000) ;
+        return blocks;
+    }
+    public int C_SCAN_EDF ()   {
+        int blocks = 0;
+        int currentBlock = 0;
+        int currentTime = 0;
+        int rejected = 0;
+        ArrayList<Task> tasks = new ArrayList<Task>();
+        ArrayList<Task> priorityTasks = new ArrayList<Task>();
+        ArrayList<Task> waitingTasks = new ArrayList<Task>();
+        ArrayList<Task> waitingPriorityTasks = new ArrayList<Task>();
+        for (Task aTask : queue) {
+            tasks.add(new Task(aTask));
+        }
+        for (Task aTask : priorityQueue) {
+            priorityTasks.add(new Task(aTask));
+        }
+        System.out.println("proritytasks" + priorityTasks);
+        do {
+            /**
+             * copying to waiting queues when current time equals arrival time
+             */
+            for (int i = 0; i < tasks.size(); i++) {
+                if (currentTime == (tasks.get(i)).getArrival()) {
+
+                    waitingTasks.add(tasks.get(i));
+                    System.out.println("waiting" + waitingTasks);
+                }
+            }
+            for (int i = 0; i < priorityTasks.size(); i++)
+
+            {
+                if (currentTime == (priorityTasks.get(i)).getArrival()) {
+
+                    waitingPriorityTasks.add(priorityTasks.get(i));
+                    System.out.println("waitingPrority" + waitingPriorityTasks);
+                }
+            }
+            if (waitingPriorityTasks.size() != 0) {
+                System.out.println("Priority: " + waitingPriorityTasks);
+                /**
+                 * if pointer reaches task cylinder number its being removed
+                 */
+                if (waitingPriorityTasks.get(0).cylinderNumber == currentBlock) {
+                    System.out.println("---------------------------------------------Priority done" + waitingPriorityTasks.get(0));
+                    waitingPriorityTasks.remove(0);
+                }
+                /**
+                 * when new task has come or last task has been done
+                 */
+                Collections.sort(waitingPriorityTasks, Task.deadlineComparator);
+                if (waitingPriorityTasks.size() != 0 && currentBlock == waitingPriorityTasks.get(0).cylinderNumber) {
+                    /**
+                     * if pointer wont meet deadline is rejected
+                     */
+                    if (waitingPriorityTasks.get(0).deadline < Math.abs(waitingPriorityTasks.get(0).cylinderNumber - currentBlock)) {
+                        System.out.println("rejection");
+                        rejected++;
+                    }
+                }
+                if (waitingPriorityTasks.size() != 0) {
+                    /**
+                     * if pointer is moving forwards
+                     */
+                    if (waitingPriorityTasks.get(0).cylinderNumber > currentBlock) {
+                        currentBlock++;
+                    }
+                    /**
+                     * if pointer is moving backwards
+                     */
+                    else {
+                        currentBlock--;
+                    }
+                    blocks++;
+                    /**
+                     * deadline is descanding with time
+                     */
+                    for (int i = 0; i < waitingPriorityTasks.size(); i++) {
+                        waitingPriorityTasks.get(i).setDeadline(waitingPriorityTasks.get(i).deadline - 1);
+                    }
+                }
+            }
+            /**
+             * if there is no tasks in priority queue but are tasks without deadline
+             */
+            else if (waitingTasks.size() != 0) {
+                System.out.println("Norlmalne: " + waitingTasks);
+                /**
+                 * if pointer reaches task cylinder number its being removed
+                 */
+                for(int i = 0; i < waitingTasks.size(); i++)
+                {
+                    if (currentBlock == waitingTasks.get(i).cylinderNumber) {
+                        System.out.println("-----------------------------------------------Normal task has been done: " + waitingTasks.get(i));
+                        waitingTasks.remove(i);
+                    }
+                }
+
+                /**
+                 * processing other tasks from normal queue, Scannig
+                 */
+                if (waitingTasks.size() != 0) {
+                       if (currentBlock == DISK_SIZE) {
+                        currentBlock = 0;
+                    }
+                    currentBlock++;
+                    blocks++;
+                }
+            }
+            currentTime++;
+            if (waitingPriorityTasks.size() != 0 || waitingTasks.size() != 0) {
+                System.out.println("Currenttime: " + currentTime);
+                System.out.println("Currentblock: " + currentBlock);
+                System.out.println("Blocks: " + blocks);
+            } else {
+                System.out.println("Waiting for a task");
+            }
+        }
+        while (currentTime != 100000) ;
         return blocks;
 
     }
-  */
+    public int C_SCAN_FD_SCAN()  {
+        int blocks = 0;
+        int currentBlock = 0;
+        int currentTime = 0;
+        int rejected = 0;
+        ArrayList<Task> tasks = new ArrayList<Task>();
+        ArrayList<Task> priorityTasks = new ArrayList<Task>();
+        ArrayList<Task> waitingTasks = new ArrayList<Task>();
+        ArrayList<Task> waitingPriorityTasks = new ArrayList<Task>();
+        for (Task aTask : queue) {
+            tasks.add(new Task(aTask));
+        }
+        for (Task aTask : priorityQueue) {
+            priorityTasks.add(new Task(aTask));
+        }
+        System.out.println("proritytasks" + priorityTasks);
+        do {
+            /**
+             * copying to waiting queues when current time equals arrival time
+             */
+            for (int i = 0; i < tasks.size(); i++) {
+                if (currentTime == (tasks.get(i)).getArrival()) {
+
+                    waitingTasks.add(tasks.get(i));
+                    System.out.println("waiting" + waitingTasks);
+                }
+            }
+            for (int i = 0; i < priorityTasks.size(); i++)
+
+            {
+                if (currentTime == (priorityTasks.get(i)).getArrival()) {
+
+                    waitingPriorityTasks.add(priorityTasks.get(i));
+                    System.out.println("waitingPrority" + waitingPriorityTasks);
+                }
+            }
+            if (waitingPriorityTasks.size() != 0) {
+                System.out.println("Priority: " + waitingPriorityTasks);
+                /**
+                 * if pointer reaches task cylinder number its being removed
+                 */
+                if (waitingPriorityTasks.get(0).cylinderNumber == currentBlock) {
+                    System.out.println("---------------------------------------------Priority done" + waitingPriorityTasks.get(0));
+                    waitingPriorityTasks.remove(0);
+                }
+                /**
+                 * when new task has come or last task has been done
+                 */
+                Collections.sort(waitingPriorityTasks, Task.deadlineComparator);
+                if (waitingPriorityTasks.size() != 0 && currentBlock == waitingPriorityTasks.get(0).cylinderNumber) {
+                    /**
+                     * if pointer wont meet deadline is rejected
+                     */
+                    if (waitingPriorityTasks.get(0).deadline < Math.abs(waitingPriorityTasks.get(0).cylinderNumber - currentBlock)) {
+                        System.out.println("rejection");
+                        rejected++;
+                    }
+                }
+                if (waitingPriorityTasks.size() != 0) {
+                    /**
+                     * deadline is descanding with time
+                     */
+                    for (int i = 0; i < waitingPriorityTasks.size(); i++) {
+                        waitingPriorityTasks.get(i).setDeadline(waitingPriorityTasks.get(i).deadline - 1);
+                        /**
+                         * doing task along the way of pointer
+                         */
+                        if (currentBlock == waitingPriorityTasks.get(i).cylinderNumber) {
+                            System.out.println("--------------------Removed on the way" + waitingPriorityTasks.get(i));
+                            waitingPriorityTasks.remove(i);
+                        }
+                    }
+                    /**
+                     * if pointer is moving forwards
+                     */
+                    if (waitingPriorityTasks.size() > 0) {
+                        if (waitingPriorityTasks.get(0).cylinderNumber > currentBlock) {
+                            currentBlock++;
+                        }
+                        /**
+                         * if pointer is moving backwards
+                         */
+                        else {
+                            currentBlock--;
+                        }
+                        blocks++;
+                    }
+                }
+            }
+            /**
+             * if there is no tasks in priority queue but are tasks without deadline
+             */
+            else if (waitingTasks.size() != 0) {
+                System.out.println("Norlmalne: " + waitingTasks);
+                /**
+                 * if pointer reaches task cylinder number its being removed
+                 */
+                for(int i = 0; i < waitingTasks.size(); i++)
+                {
+                    if (currentBlock == waitingTasks.get(i).cylinderNumber) {
+                        System.out.println("-----------------------------------------------Normal task has been done: " + waitingTasks.get(i));
+                        waitingTasks.remove(i);
+                    }
+                }
+
+                /**
+                 * processing other tasks from normal queue, Scannig
+                 */
+                if (waitingTasks.size() != 0) {
+
+                    if (currentBlock == DISK_SIZE) {
+                        currentBlock = 0;
+                    }
+                    currentBlock++;
+                    blocks++;
+                }
+            }
+            currentTime++;
+            if (waitingPriorityTasks.size() != 0 || waitingTasks.size() != 0) {
+                System.out.println("Currenttime: " + currentTime);
+                System.out.println("Currentblock: " + currentBlock);
+                System.out.println("Blocks: " + blocks);
+            } else {
+                System.out.println("Waiting for a task");
+            }
+        }
+        while (currentTime != 100000) ;
+        return blocks;
+    }
+
+
+
+}
