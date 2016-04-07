@@ -33,7 +33,7 @@ public class Main {
         queue.add(new Task(600, 77));
         Algorithms a = new Algorithms(queue, priorityQueue);
         a.SSTF_EDF();   */
-       Results r = new Results(1, 500, 20);
+       Results r = new Results(2, 500, 20);
        System.out.println(r.averageResults());
     }
 }
